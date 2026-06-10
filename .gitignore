@@ -1,0 +1,14 @@
+tags
+test.sh
+.luarc.json
+nvim
+
+spell/
+
+# nvim-pack-lock.json is tracked (personal fork) for reproducible plugin versions
+# - see :help vim.pack-lockfile
+
+.DS_Store
+
+# Claude Code per-machine settings (personal allowlist; keep out of public repo)
+.claude/settings.local.json
