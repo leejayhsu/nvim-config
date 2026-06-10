@@ -1,3 +1,6 @@
+# General guidelines
+- always use conventional commit naming for pr titles and commit messages
+
 # Neovim config
 
 Personal Neovim config, derived from kickstart.nvim. Most of it lives in a single
