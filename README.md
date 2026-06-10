@@ -1,6 +1,91 @@
-# kickstart.nvim
+# nvim-config
 
-## Introduction
+My personal Neovim config, derived from [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim).
+Most of it lives in a single `init.lua` (organized into numbered sections); a few
+self-contained plugins live under `lua/custom/plugins/`. Plugins are managed with
+Neovim's native `vim.pack` (no lazy.nvim/packer), and LSP uses the native
+`vim.lsp.config`/`vim.lsp.enable` API (Neovim 0.11+).
+
+## Setup on a clean machine
+
+### 1. Install Neovim (0.11+ required)
+
+This config uses the native `vim.pack` package manager and native LSP API, both of
+which need **Neovim 0.11 or newer**. Check with `nvim --version`.
+
+**macOS (Homebrew):**
+
+```sh
+brew install neovim
+```
+
+**Linux / other:** see [Install Recipes](#install-recipes) below, but make sure the
+version is ≥ 0.11 (distro packages are often older — use the
+[alternative methods](#alternative-neovim-installation-methods) if so).
+
+### 2. Install external dependencies
+
+These are used by the picker, formatting, and language tooling:
+
+```sh
+# macOS
+brew install git ripgrep fd stylua node
+```
+
+- `git` — required by `vim.pack` to fetch plugins
+- `ripgrep` + `fd` — power the snacks.nvim picker (grep / file finding)
+- `stylua` — Lua formatter used by conform.nvim
+- `node` (`npm`) — needed for the `ts_ls` (JS/TS) language server
+- A C compiler (`gcc`/clang — clang ships with Xcode CLT on macOS) for tree-sitter
+- Python — only if you edit Python; the `ty` server (Astral) is installed via Mason
+- A [Nerd Font](https://www.nerdfonts.com/) (optional) for icons; if you have one,
+  `vim.g.have_nerd_font` is already set in `init.lua`
+
+> [!NOTE]
+> LSP servers (`ts_ls`, `ty`, `lua_ls`) are installed automatically by **Mason** on
+> first launch — you don't install them by hand.
+
+### 3. Clone this repo into your config path
+
+> [!WARNING]
+> If you already have a Neovim config, back it up first (see [FAQ](#faq)).
+
+```sh
+git clone git@github.com:leejayhsu/nvim-config.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+```
+
+### 4. First launch
+
+```sh
+nvim
+```
+
+On first start, `vim.pack` clones every plugin pinned in `nvim-pack-lock.json` (so
+you get the exact versions from this repo), and Mason installs the LSP servers. Give
+it a moment; restart Neovim once it's done.
+
+- Update plugins: `:lua vim.pack.update()` (`:write` applies, `:quit` cancels).
+  Commit the updated `nvim-pack-lock.json` to record new versions.
+- Inspect plugin state offline: `:lua vim.pack.update(nil, { offline = true })`
+- Verify `init.lua` parses after edits:
+  `nvim --headless -c "lua assert(loadfile('init.lua'))" -c "qa"`
+
+### Uninstall / reset
+
+Remove the config and its data/state directories, then re-clone:
+
+```sh
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+```
+
+---
+
+## Upstream: kickstart.nvim
+
+The sections below are inherited from kickstart.nvim and kept as a general reference
+(install recipes for other OSes, FAQ, etc.).
+
+### Introduction
 
 A starting point for Neovim that is:
 
