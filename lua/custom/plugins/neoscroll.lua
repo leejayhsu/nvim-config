@@ -30,7 +30,9 @@ vim.keymap.set('n', '<C-d>', function() neoscroll.ctrl_d { duration = 150 } end,
 vim.keymap.set('n', '<C-u>', function() neoscroll.ctrl_u { duration = 150 } end, { desc = 'Scroll up half page (smooth)' })
 
 -- Animate the mouse wheel too (snacks deliberately refused to). Each wheel
--- tick smooth-scrolls a few lines; move_cursor=false so the cursor stays where
--- it is, matching normal wheel behavior.
-vim.keymap.set({ 'n', 'v', 'x' }, '<ScrollWheelUp>', function() neoscroll.scroll(-3, { move_cursor = false, duration = 80 }) end, { desc = 'Smooth scroll up (mouse)' })
-vim.keymap.set({ 'n', 'v', 'x' }, '<ScrollWheelDown>', function() neoscroll.scroll(3, { move_cursor = false, duration = 80 }) end, { desc = 'Smooth scroll down (mouse)' })
+-- notch smooth-scrolls 6 lines (bump this number for bigger/smaller jumps);
+-- move_cursor=false so the cursor stays where it is, matching normal wheel
+-- behavior. Duration is per-notch and still scaled by duration_multiplier.
+local WHEEL_LINES = 6
+vim.keymap.set({ 'n', 'v', 'x' }, '<ScrollWheelUp>', function() neoscroll.scroll(-WHEEL_LINES, { move_cursor = false, duration = 80 }) end, { desc = 'Smooth scroll up (mouse)' })
+vim.keymap.set({ 'n', 'v', 'x' }, '<ScrollWheelDown>', function() neoscroll.scroll(WHEEL_LINES, { move_cursor = false, duration = 80 }) end, { desc = 'Smooth scroll down (mouse)' })
