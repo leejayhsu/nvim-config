@@ -44,6 +44,97 @@ When hunting for a plugin's config, grep BOTH `init.lua` and
 are dormant leftovers from the kickstart base — every `require 'kickstart.plugins.*'`
 is commented out, so nothing there loads. Ignore them (or delete).
 
+## Code navigation, selection & manipulation toolkit
+
+**Read this before advising on how to move around, select, or edit code.** This
+config layers several plugins on top of vanilla Vim motions — prefer these over
+generic `:s///`, manual `f`/`t` hunting, or visual-mode line-counting. Everything
+below is verified against `init.lua` + `lua/custom/plugins/`; keys are accurate as
+configured (not plugin defaults). Leader is `<space>`, localleader is `\`.
+
+### Jumping around the screen / file (motions)
+
+| Key | What | Notes |
+|-----|------|-------|
+| `s` + 2 chars + label | **flash.nvim** jump anywhere on screen | works in normal **and** operator-pending/visual — `ds`, `ys`, `cs` jump-then-act on a remote spot |
+| `S` | flash **treesitter** select | labels syntax nodes for structural selection |
+| `r` (op-pending) | flash **remote** | operate on a remote textobject without moving, e.g. `yr` |
+| `R` (op/visual) | flash treesitter search | |
+| `5j` / `12k` | relative-number jumps | `relativenumber` is on — count off the gutter |
+| `<C-d>`/`<C-u>` | smooth half-page scroll (**neoscroll**) | `<C-f>`/`<C-b>` full page; `zz` stays instant |
+| `<C-o>`/`<C-i>` | jumplist back/forward | built-in |
+| `<C-t>` | pop back after a definition jump | built-in tagstack |
+| `z1`..`z4` | fold to level N | `zR` open all, `zM` close all, `za` toggle (treesitter folds) |
+| `[d`/`]d` | prev/next diagnostic | auto-opens the float on landing |
+
+Reach for `s` (flash) instead of repeated `w`/`f`/`/` when the target is visible —
+it's the single biggest "expert" win here.
+
+### Selecting (text objects)
+
+- **mini.ai** extends `a`/`i`: `va)`, `ci'`, `ci(`, `dat`, `yiiq` ([y]ank [i]nside
+  [i]+1 [q]uote), `vi{`, etc. `n_lines = 500` so it searches across lines.
+- `aa` / `ii` = the **next** around/inside object (mini.ai's `around_next`/`inside_next`),
+  e.g. `ciaa)` changes inside the next parens.
+- `S` (flash treesitter) for structural/AST-aware selection when bracket-matching
+  isn't enough.
+
+### Manipulating code
+
+| Key | Action | Plugin |
+|-----|--------|--------|
+| `gsa{motion}{char}` | **add** surround, e.g. `gsaiw)`, `gsa$"` | mini.surround |
+| `gsd{char}` | **delete** surround, e.g. `gsd'` | mini.surround |
+| `gsr{old}{new}` | **replace** surround, e.g. `gsr)'` | mini.surround |
+| `gsf`/`gsF` | find surround right/left | mini.surround |
+| `gcc` / `gc{motion}` | toggle comment (line / motion), `gc` in visual | built-in (Neovim ≥0.10) |
+| `<leader>f` | format buffer (n/visual) | conform.nvim (also format-on-save for py/js/ts) |
+| `grn` | LSP rename (across files) | native LSP |
+| `gra` | LSP code action (n/visual) | native LSP |
+
+mini.surround lives on `gs*`, **not** the default `s*` — `s` was freed for flash.
+
+### Find / replace across the project
+
+- `<leader>sR` — **grug-far** project-wide find/replace buffer (ripgrep-backed,
+  live preview). Visual mode `<leader>sR` seeds the selection; `<leader>sW` seeds
+  the word under cursor. Prefer this over `:%s` for anything multi-file.
+- `<leader>sg` grep, `<leader>sw` grep current word (n/v), `<leader>s/` grep open
+  buffers, `<leader>/` fuzzy lines in the current buffer — all **snacks picker**.
+
+### Finding code (pickers + LSP)
+
+| Key | Finds |
+|-----|-------|
+| `<leader>sf` | files |
+| `<leader><leader>` | open buffers |
+| `<leader>ss` / `gO` | document symbols (outline) |
+| `<leader>sS` / `gW` | workspace symbols (see section below — VS Code Cmd+T) |
+| `grd` | definition (`<C-t>` to return) |
+| `grr` | references |
+| `gri` | implementations |
+| `grt` | type definition |
+| `grD` | declaration |
+| `K` | hover docs · `<leader>k` signature help |
+| `<leader>sd` | diagnostics · `<leader>xx` Trouble panel |
+| `<leader>e` | file explorer (snacks) |
+
+### Buffers & windows
+
+- Buffers: `<S-h>`/`<S-l>` (or `[b`/`]b`) prev/next, `<leader>1`..`9` jump by the
+  ordinal shown in **bufferline**, `<leader>bb` pick-by-label, `<leader>bd` delete.
+- Windows: `<leader>w{hjkl}` focus, `<leader>w{HJKL}` focus farthest,
+  `<leader>wv`/`ws` split, `<leader>wc` close, `<leader>wo` close others.
+
+### Git / review navigation
+
+- `<leader>gg` lazygit, `<leader>gb` blame line, `<leader>gd` diff branch vs main
+  (diffview), `<leader>gp`/`gi`/`gr` octo PR list / issue list / start review.
+  Git hunk ops under `<leader>h` (gitsigns).
+
+When in doubt about a key, `<leader>sk` searches keymaps and which-key shows
+pending chains live (it pops instantly — `delay = 0`).
+
 ## Workspace symbol search (`<leader>sS`, VS Code Cmd+T equivalent)
 
 Lives in SECTION 4 (the snacks picker block): `workspace_symbols` /
