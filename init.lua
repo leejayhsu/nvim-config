@@ -916,6 +916,12 @@ do
   vim.keymap.set('n', '<leader>sh', picker.help, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', picker.keymaps, { desc = '[S]earch [K]eymaps' })
   vim.keymap.set('n', '<leader>sf', picker.files, { desc = '[S]earch [F]iles' })
+  -- Like <leader>sf but includes dotfiles and git-ignored files (.env,
+  --  generated code, node_modules, ...). Same effect as hitting <a-h> + <a-i>
+  --  inside the files picker, just persistent.
+  vim.keymap.set('n', '<leader>sF', function()
+    picker.files { hidden = true, ignored = true }
+  end, { desc = '[S]earch all [F]iles (+hidden/ignored)' })
   vim.keymap.set('n', '<leader>sp', picker.pickers, { desc = '[S]earch [P]ickers (select picker)' })
   -- Symbol search, kept under the `<leader>s` "search" prefix.
   --  Lowercase `s` = current document, capital `S` = whole workspace.

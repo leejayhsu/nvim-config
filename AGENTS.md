@@ -110,6 +110,7 @@ mini.surround lives on `gs*`, **not** the default `s*` — `s` was freed for fla
 | Key | Finds |
 |-----|-------|
 | `<leader>sf` | files |
+| `<leader>sF` | all files, including hidden + git-ignored |
 | `<leader><leader>` | open buffers |
 | `<leader>ss` / `gO` | document symbols (outline) |
 | `<leader>sS` / `gW` | workspace symbols (see section below — VS Code Cmd+T) |
