@@ -121,7 +121,7 @@ mini.surround lives on `gs*`, **not** the default `s*` — `s` was freed for fla
 | `grD` | declaration |
 | `K` | hover docs · `<leader>k` signature help |
 | `<leader>sd` | diagnostics · `<leader>xx` Trouble panel |
-| `<leader>e` | file explorer (snacks) |
+| `<leader>e` | file explorer (snacks; shows hidden+ignored, minus an `exclude` list — `A` (or `<a-a>`) toggles showing everything incl. excluded; `H`/`I` toggle hidden/ignored) |
 
 ### Buffers & windows
 

@@ -811,6 +811,26 @@ do
   -- See https://github.com/folke/snacks.nvim and `:help snacks-picker`
   vim.pack.add { gh 'folke/snacks.nvim' }
 
+  -- Globs the explorer never shows by default (regardless of the hidden /
+  --  ignored settings). Hoisted to a local so the <a-a> show-all toggle below
+  --  can restore it after temporarily clearing it.
+  local explorer_exclude = {
+    'node_modules',
+    '.git',
+    '.idea',
+    '.jest',
+    '.nyc_output',
+    '.pytest_cache',
+    'coverage',
+    'dist',
+    'logs',
+    '.DS_Store',
+    '.sentryclirc',
+    '*.tsbuildinfo',
+    '.husky',
+    '.nvmrc',
+  }
+
   require('snacks').setup {
     picker = {
       enabled = true,
@@ -844,7 +864,32 @@ do
         --  single-key `y` so there's exactly one scheme. All land in the
         --  system clipboard (`+`).
         explorer = {
+          -- Show dotfiles and git-ignored files in the tree by default
+          --  (toggle off live with <a-h> / <a-i> if it gets noisy).
+          hidden = true,
+          ignored = true,
+          -- ...except these: excluded globs never show, regardless of the
+          --  hidden/ignored settings or the <a-h>/<a-i> toggles. <a-a> below
+          --  lifts even this filter.
+          exclude = explorer_exclude,
+          -- Registers an `a` title indicator (like the built-in h/i): snacks
+          --  lights up the letter while `picker.opts.all` is truthy, which the
+          --  toggle_show_all action below flips. (snacks also auto-generates a
+          --  `toggle_all` action from this entry; it's unbound and only flips
+          --  the flag, so our differently-named action is the real toggle.)
+          toggles = { all = 'a' },
           actions = {
+            -- <a-a>: show absolutely everything -- hidden, ignored, AND the
+            --  excluded globs above. Toggling back restores the exclude list
+            --  and re-asserts hidden/ignored (our defaults are both on).
+            toggle_show_all = function(p)
+              local o = p.opts
+              o.all = not o.all
+              o.exclude = o.all and {} or explorer_exclude
+              o.hidden, o.ignored = true, true
+              p.list:set_target()
+              p:find()
+            end,
             yank_rel_path = function(p, item)
               if not item then return end
               local path = Snacks.picker.util.path(item)
@@ -866,8 +911,17 @@ do
             end,
           },
           win = {
+            input = {
+              keys = {
+                ['<a-a>'] = { 'toggle_show_all', mode = { 'i', 'n' } },
+              },
+            },
             list = {
               keys = {
+                ['<a-a>'] = 'toggle_show_all',
+                -- Shift-variant, matching snacks' built-in H/I toggles in the
+                --  tree (handy in terminals where Option isn't sent as Alt).
+                ['A'] = 'toggle_show_all',
                 ['y'] = false, -- drop snacks' default single-key yank; use the leader scheme
                 ['<leader>yp'] = 'yank_rel_path',
                 ['<leader>yP'] = 'yank_abs_path',
