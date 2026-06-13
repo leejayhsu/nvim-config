@@ -1352,6 +1352,9 @@ do
     -- Python: ty, Astral's type checker / language server.
     ty = {},
 
+    -- Elixir / Phoenix
+    elixirls = {},
+
     stylua = {}, -- Used to format Lua code
 
     -- Special Lua Config, as recommended by neovim help docs
