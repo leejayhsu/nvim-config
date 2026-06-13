@@ -9,6 +9,7 @@ spell/
 # - see :help vim.pack-lockfile
 
 .DS_Store
+nvim.log
 
 # Claude Code per-machine settings (personal allowlist; keep out of public repo)
 .claude/settings.local.json
