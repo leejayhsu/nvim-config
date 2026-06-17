@@ -445,6 +445,12 @@ do
   vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {}
 
+  -- Rainbow CSV: colors each column a distinct color and adds SQL-like RBQL
+  -- queries over the buffer (`:RainbowQuery`). It owns highlighting for csv/tsv
+  -- buffers — see the treesitter FileType autocmd, which skips csv so this
+  -- plugin's per-column coloring isn't overridden by treesitter highlights.
+  vim.pack.add { gh 'mechatroner/rainbow_csv' }
+
   -- Because lua is a real programming language, you can also have some logic to your installation -
   -- like only installing a plugin if a condition is met.
   --
@@ -1616,7 +1622,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'eex', 'elixir', 'heex', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'csv', 'diff', 'eex', 'elixir', 'heex', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
@@ -1644,6 +1650,10 @@ do
   vim.api.nvim_create_autocmd('FileType', {
     callback = function(args)
       local buf, filetype = args.buf, args.match
+
+      -- Let rainbow_csv own csv/tsv highlighting (per-column rainbow colors).
+      -- Treesitter highlight extmarks would otherwise override its coloring.
+      if filetype == 'csv' or filetype == 'tsv' then return end
 
       local language = vim.treesitter.language.get_lang(filetype)
       if not language then return end
